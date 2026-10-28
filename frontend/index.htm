@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Profissional de Cozinha - Japonesa</title>
+    <!-- Usando Tailwind CSS via CDN para deixar o design moderno rapidamente -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Cabeçalho -->
+        <header class="mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-3xl font-bold text-amber-400">🍣 Controle de Cozinha Japonesa</h1>
+            <p class="text-slate-400">Painel integrado com MySQL e Node.js</p>
+        </header>
+
+        <!-- Seção de Pratos Cadastrados -->
+        <div class="bg-slate-800 rounded-lg p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-amber-300">📋 Pratos Cadastrados no Banco</h2>
+            <div id="lista-pratos" class="space-y-2">
+                <p class="text-slate-400 italic">Carregando pratos do servidor...</p>
+            </div>
+        </div>
+
+        <!-- Seção de Ingredientes / Estoque -->
+        <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 text-amber-300">📦 Estoque de Ingredientes</h2>
+            <div id="lista-ingredientes" class="space-y-2">
+                <p class="text-slate-400 italic">Carregando ingredientes do servidor...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript para buscar os dados da nossa API -->
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Função para carregar os pratos
+        async function carregarPratos() {
+            try {
+                const response = await fetch(`${API_URL}/pratos`);
+                const pratos = await response.json();
+                
+                const container = document.getElementById('lista-pratos');
+                if (pratos.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400">Nenhum prato cadastrado ainda.</p>';
+                    return;
+                }
+
+                container.innerHTML = pratos.map(p => `
+                    <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-lg">${p.nome}</span>
+                            <span class="text-xs bg-amber-500 text-slate-900 px-2 py-0.5 rounded ml-2 font-semibold">${p.tipo}</span>
+                        </div>
+                        <span class="text-slate-300 text-sm">Preparo: ${p.tempo_preparo || 0} min</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao buscar pratos:', error);
+                document.getElementById('lista-pratos').innerHTML = '<p class="text-red-400">Erro ao conectar com a API do servidor.</p>';
+            }
+        }
+
+        // Função para carregar os ingredientes
+        async function carregarIngredientes() {
+            try {
+                const response = await fetch(`${API_URL}/ingredientes`);
+                const ingredientes = await response.json();
+                
+                const container = document.getElementById('lista-ingredientes');
+                if (ingredientes.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400">Nenhum ingrediente cadastrado.</p>';
+                    return;
+                }
+
+                container.innerHTML = ingredientes.map(i => `
+                    <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
+                        <span class="font-medium">${i.nome}</span>
+                        <span class="text-amber-400 font-bold">${i.estoque_atual} ${i.unidade}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao buscar ingredientes:', error);
+                document.getElementById('lista-ingredientes').innerHTML = '<p class="text-red-400">Erro ao conectar com a API do servidor.</p>';
+            }
+        }
+
+        // Executa as funções assim que a página abre
+        carregarPratos();
+        carregarIngredientes();
+    </script>
+</body>
+</html>
