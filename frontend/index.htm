@@ -4,93 +4,463 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Profissional de Cozinha - Japonesa</title>
-    <!-- Usando Tailwind CSS via CDN para deixar o design moderno rapidamente -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+<body class="bg-slate-950 text-slate-100 flex h-screen overflow-hidden">
 
-    <div class="max-w-4xl mx-auto">
-        <!-- Cabeçalho -->
-        <header class="mb-8 border-b border-slate-700 pb-4">
-            <h1 class="text-3xl font-bold text-amber-400">🍣 Controle de Cozinha Japonesa</h1>
-            <p class="text-slate-400">Painel integrado com MySQL e Node.js</p>
-        </header>
-
-        <!-- Seção de Pratos Cadastrados -->
-        <div class="bg-slate-800 rounded-lg p-6 shadow-lg mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-amber-300">📋 Pratos Cadastrados no Banco</h2>
-            <div id="lista-pratos" class="space-y-2">
-                <p class="text-slate-400 italic">Carregando pratos do servidor...</p>
+    <!-- BARRA LATERAL -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-4 shrink-0">
+        <div>
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <span class="text-2xl">🍣</span>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Cozinha Japonesa</h1>
+                    <p class="text-xs text-slate-400">Painel Administrativo</p>
+                </div>
             </div>
+
+            <nav class="space-y-1">
+                <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-red-600 text-white font-medium transition shadow-lg shadow-red-900/30">
+                    <span>📊</span>
+                    <span>Visão Geral</span>
+                </button>
+                <button onclick="mudarAba('pratos')" id="btn-pratos" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
+                    <span>🍱</span>
+                    <span>Gerenciar Pratos</span>
+                </button>
+                <button onclick="mudarAba('ingredientes')" id="btn-ingredientes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
+                    <span>📦</span>
+                    <span>Estoque / Insumos</span>
+                </button>
+                <button onclick="mudarAba('cozinheiros')" id="btn-cozinheiros" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
+                    <span>👨‍🍳</span>
+                    <span>Cozinheiros</span>
+                </button>
+            </nav>
         </div>
 
-        <!-- Seção de Ingredientes / Estoque -->
-        <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
-            <h2 class="text-xl font-semibold mb-4 text-amber-300">📦 Estoque de Ingredientes</h2>
-            <div id="lista-ingredientes" class="space-y-2">
-                <p class="text-slate-400 italic">Carregando ingredientes do servidor...</p>
-            </div>
+        <div class="text-xs text-slate-500 px-2">
+            Status API: <span id="status-api" class="text-amber-400 font-semibold">● Verificando...</span>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-slate-900/50 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+            <h2 id="titulo-pagina" class="text-xl font-bold text-slate-100">Visão Geral do Sistema</h2>
+            <div class="text-sm text-slate-400">Gabriel Cardoso | Full-Stack</div>
+        </header>
+
+        <div class="p-8 space-y-6 flex-1">
+
+            <!-- ABA 1: DASHBOARD -->
+            <section id="aba-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                        <p class="text-slate-400 text-sm">Pratos no Cardápio</p>
+                        <h3 id="total-pratos" class="text-3xl font-bold mt-2 text-red-500">0</h3>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                        <p class="text-slate-400 text-sm">Insumos no Estoque</p>
+                        <h3 id="total-ingredientes" class="text-3xl font-bold mt-2 text-amber-500">0</h3>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                        <p class="text-slate-400 text-sm">Cozinheiros na Equipe</p>
+                        <h3 id="total-cozinheiros" class="text-3xl font-bold mt-2 text-emerald-500">0</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 2: PRATOS -->
+            <section id="aba-pratos" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <input type="text" id="filtro-pratos" onkeyup="filtrarTabela('filtro-pratos', 'tabela-pratos-corpo')" placeholder="🔍 Filtrar pratos por nome ou tipo..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-red-500">
+                    <button onclick="abrirModalPrato()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-red-900/20 shrink-0">
+                        + Novo Prato
+                    </button>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Nome do Prato</th>
+                                <th class="p-4">Tipo / Categoria</th>
+                                <th class="p-4">Tempo de Preparo</th>
+                                <th class="p-4 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-pratos-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ABA 3: INGREDIENTES -->
+            <section id="aba-ingredientes" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <input type="text" id="filtro-ingredientes" onkeyup="filtrarTabela('filtro-ingredientes', 'tabela-ingredientes-corpo')" placeholder="🔍 Filtrar insumos no estoque..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-amber-500">
+                    <button onclick="abrirModalIngrediente()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-amber-900/20 shrink-0">
+                        + Novo Ingrediente
+                    </button>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Insumo</th>
+                                <th class="p-4">Estoque Atual</th>
+                                <th class="p-4">Unidade</th>
+                                <th class="p-4 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-ingredientes-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ABA 4: COZINHEIROS -->
+            <section id="aba-cozinheiros" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <input type="text" id="filtro-cozinheiros" onkeyup="filtrarTabela('filtro-cozinheiros', 'tabela-cozinheiros-corpo')" placeholder="🔍 Filtrar cozinheiros..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-emerald-500">
+                    <button onclick="abrirModalCozinheiro()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-emerald-900/20 shrink-0">
+                        + Novo Cozinheiro
+                    </button>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Nome</th>
+                                <th class="p-4">Nível</th>
+                                <th class="p-4">Especialidade</th>
+                                <th class="p-4 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-cozinheiros-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL DE PRATO -->
+    <div id="modal-prato" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
+            <h3 id="modal-prato-titulo" class="text-lg font-bold">Cadastrar Novo Prato</h3>
+            <form id="form-prato" onsubmit="salvarPrato(event)" class="space-y-4">
+                <input type="hidden" id="prato-id">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nome do Prato</label>
+                    <input type="text" id="prato-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Tipo / Categoria</label>
+                    <input type="text" id="prato-tipo" required placeholder="Ex: Sushis, Temakis, Quentes" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Tempo de Preparo (minutos)</label>
+                    <input type="number" id="prato-tempo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="fecharModal('modal-prato')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-sm font-medium transition">Salvar Prato</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Script JavaScript para buscar os dados da nossa API -->
+    <!-- MODAL DE INGREDIENTE -->
+    <div id="modal-ingrediente" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
+            <h3 id="modal-ingrediente-titulo" class="text-lg font-bold">Cadastrar Novo Ingrediente</h3>
+            <form id="form-ingrediente" onsubmit="salvarIngrediente(event)" class="space-y-4">
+                <input type="hidden" id="ingrediente-id">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nome do Insumo</label>
+                    <input type="text" id="ingrediente-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Estoque Atual</label>
+                    <input type="number" step="1" id="ingrediente-qtd" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Unidade de Medida</label>
+                    <input type="text" id="ingrediente-unidade" required placeholder="Ex: kg, un, litros" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="fecharModal('modal-ingrediente')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-sm font-medium transition">Salvar Insumo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE COZINHEIRO -->
+    <div id="modal-cozinheiro" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
+            <h3 id="modal-cozinheiro-titulo" class="text-lg font-bold">Cadastrar Novo Cozinheiro</h3>
+            <form id="form-cozinheiro" onsubmit="salvarCozinheiro(event)" class="space-y-4">
+                <input type="hidden" id="cozinheiro-id">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nome do Profissional</label>
+                    <input type="text" id="cozinheiro-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nível de Experiência</label>
+                    <select id="cozinheiro-nivel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        <option value="Júnior">Júnior</option>
+                        <option value="Pleno">Pleno</option>
+                        <option value="Sênior / Sushiman Chefe">Sênior / Sushiman Chefe</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Especialidade</label>
+                    <input type="text" id="cozinheiro-especialidade" placeholder="Ex: Cortes de Peixe, Pratos Quentes" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="fecharModal('modal-cozinheiro')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-sm font-medium transition">Salvar Cozinheiro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_URL = 'http://localhost:3000/api';
 
-        // Função para carregar os pratos
+        function fecharModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function filtrarTabela(inputId, tbodyId) {
+            const termo = document.getElementById(inputId).value.toLowerCase();
+            const linhas = document.getElementById(tbodyId).getElementsByTagName('tr');
+            for (let linha of linhas) {
+                linha.style.display = linha.innerText.toLowerCase().includes(termo) ? '' : 'none';
+            }
+        }
+
+        function mudarAba(aba) {
+            ['dashboard', 'pratos', 'ingredientes', 'cozinheiros'].forEach(item => {
+                document.getElementById(`aba-${item}`).classList.add('hidden');
+                document.getElementById(`btn-${item}`).className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition";
+            });
+
+            document.getElementById(`aba-${aba}`).classList.remove('hidden');
+            const cores = { dashboard: 'bg-red-600 shadow-red-900/30', pratos: 'bg-red-600 shadow-red-900/30', ingredientes: 'bg-amber-600 shadow-amber-900/30', cozinheiros: 'bg-emerald-600 shadow-emerald-900/30' };
+            const titulos = { dashboard: 'Visão Geral do Sistema', pratos: 'Gerenciamento de Pratos', ingredientes: 'Controle de Estoque de Ingredientes', cozinheiros: 'Equipe de Cozinheiros' };
+
+            document.getElementById(`btn-${aba}`).className = `w-full flex items-center space-x-3 px-4 py-3 rounded-xl ${cores[aba]} text-white font-medium transition shadow-lg`;
+            document.getElementById('titulo-pagina').innerText = titulos[aba];
+
+            atualizarTudo();
+        }
+
+        // ==================== PRATOS ====================
         async function carregarPratos() {
             try {
-                const response = await fetch(`${API_URL}/pratos`);
-                const pratos = await response.json();
-                
-                const container = document.getElementById('lista-pratos');
-                if (pratos.length === 0) {
-                    container.innerHTML = '<p class="text-slate-400">Nenhum prato cadastrado ainda.</p>';
-                    return;
-                }
+                const res = await fetch(`${API_URL}/pratos`);
+                if (!res.ok) throw new Error();
+                const pratos = await res.json();
+                document.getElementById('total-pratos').innerText = pratos.length;
+                document.getElementById('status-api').innerHTML = '<span class="text-emerald-400">● Conectada</span>';
 
-                container.innerHTML = pratos.map(p => `
-                    <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
-                        <div>
-                            <span class="font-bold text-lg">${p.nome}</span>
-                            <span class="text-xs bg-amber-500 text-slate-900 px-2 py-0.5 rounded ml-2 font-semibold">${p.tipo}</span>
-                        </div>
-                        <span class="text-slate-300 text-sm">Preparo: ${p.tempo_preparo || 0} min</span>
-                    </div>
+                const tbody = document.getElementById('tabela-pratos-corpo');
+                tbody.innerHTML = pratos.map(p => `
+                    <tr class="hover:bg-slate-900/50 transition">
+                        <td class="p-4 text-slate-400">#${p.id}</td>
+                        <td class="p-4 font-medium text-slate-200">${p.nome}</td>
+                        <td class="p-4 text-slate-400">${p.tipo || '-'}</td>
+                        <td class="p-4 text-slate-400">${p.tempo_preparo ? p.tempo_preparo + ' min' : '-'}</td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="editarPrato(${p.id}, '${p.nome.replace(/'/g, "\\'")}', '${(p.tipo || '').replace(/'/g, "\\'")}', ${p.tempo_preparo || 0})" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
+                            <button onclick="deletarItem('pratos', ${p.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
+                        </td>
+                    </tr>
                 `).join('');
-            } catch (error) {
-                console.error('Erro ao buscar pratos:', error);
-                document.getElementById('lista-pratos').innerHTML = '<p class="text-red-400">Erro ao conectar com a API do servidor.</p>';
+            } catch (e) {
+                document.getElementById('status-api').innerHTML = '<span class="text-red-400">● Erro na API</span>';
             }
         }
 
-        // Função para carregar os ingredientes
+        function abrirModalPrato() {
+            document.getElementById('modal-prato-titulo').innerText = "Cadastrar Novo Prato";
+            document.getElementById('prato-id').value = '';
+            document.getElementById('form-prato').reset();
+            document.getElementById('modal-prato').classList.remove('hidden');
+        }
+
+        function editarPrato(id, nome, tipo, tempo) {
+            document.getElementById('modal-prato-titulo').innerText = "Editar Prato";
+            document.getElementById('prato-id').value = id;
+            document.getElementById('prato-nome').value = nome;
+            document.getElementById('prato-tipo').value = tipo;
+            document.getElementById('prato-tempo').value = tempo;
+            document.getElementById('modal-prato').classList.remove('hidden');
+        }
+
+        async function salvarPrato(e) {
+            e.preventDefault();
+            const id = document.getElementById('prato-id').value;
+            const dados = {
+                nome: document.getElementById('prato-nome').value,
+                tipo: document.getElementById('prato-tipo').value,
+                tempo_preparo: document.getElementById('prato-tempo').value
+            };
+            const res = await fetch(id ? `${API_URL}/pratos/${id}` : `${API_URL}/pratos`, {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                return alert("Erro ao salvar prato: " + (err.erro || "Falha no servidor"));
+            }
+            fecharModal('modal-prato');
+            atualizarTudo();
+        }
+
+        // ==================== INGREDIENTES ====================
         async function carregarIngredientes() {
             try {
-                const response = await fetch(`${API_URL}/ingredientes`);
-                const ingredientes = await response.json();
-                
-                const container = document.getElementById('lista-ingredientes');
-                if (ingredientes.length === 0) {
-                    container.innerHTML = '<p class="text-slate-400">Nenhum ingrediente cadastrado.</p>';
-                    return;
-                }
+                const res = await fetch(`${API_URL}/ingredientes`);
+                if (!res.ok) throw new Error();
+                const ingredientes = await res.json();
+                document.getElementById('total-ingredientes').innerText = ingredientes.length;
 
-                container.innerHTML = ingredientes.map(i => `
-                    <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
-                        <span class="font-medium">${i.nome}</span>
-                        <span class="text-amber-400 font-bold">${i.estoque_atual} ${i.unidade}</span>
-                    </div>
+                const tbody = document.getElementById('tabela-ingredientes-corpo');
+                tbody.innerHTML = ingredientes.map(i => `
+                    <tr class="hover:bg-slate-900/50 transition">
+                        <td class="p-4 text-slate-400">#${i.id}</td>
+                        <td class="p-4 font-medium text-slate-200">${i.nome}</td>
+                        <td class="p-4 text-amber-400 font-semibold">${i.estoque_atual}</td>
+                        <td class="p-4 text-slate-400">${i.unidade || 'un'}</td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="editarIngrediente(${i.id}, '${i.nome.replace(/'/g, "\\'")}', ${i.estoque_atual}, '${(i.unidade || '').replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
+                            <button onclick="deletarItem('ingredientes', ${i.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
+                        </td>
+                    </tr>
                 `).join('');
-            } catch (error) {
-                console.error('Erro ao buscar ingredientes:', error);
-                document.getElementById('lista-ingredientes').innerHTML = '<p class="text-red-400">Erro ao conectar com a API do servidor.</p>';
+            } catch (e) {}
+        }
+
+        function abrirModalIngrediente() {
+            document.getElementById('modal-ingrediente-titulo').innerText = "Cadastrar Novo Ingrediente";
+            document.getElementById('ingrediente-id').value = '';
+            document.getElementById('form-ingrediente').reset();
+            document.getElementById('modal-ingrediente').classList.remove('hidden');
+        }
+
+        function editarIngrediente(id, nome, qtd, unidade) {
+            document.getElementById('modal-ingrediente-titulo').innerText = "Editar Ingrediente";
+            document.getElementById('ingrediente-id').value = id;
+            document.getElementById('ingrediente-nome').value = nome;
+            document.getElementById('ingrediente-qtd').value = qtd;
+            document.getElementById('ingrediente-unidade').value = unidade;
+            document.getElementById('modal-ingrediente').classList.remove('hidden');
+        }
+
+        async function salvarIngrediente(e) {
+            e.preventDefault();
+            const id = document.getElementById('ingrediente-id').value;
+            const dados = {
+                nome: document.getElementById('ingrediente-nome').value,
+                estoque_atual: document.getElementById('ingrediente-qtd').value,
+                unidade: document.getElementById('ingrediente-unidade').value
+            };
+            const res = await fetch(id ? `${API_URL}/ingredientes/${id}` : `${API_URL}/ingredientes`, {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                return alert("Erro ao salvar ingrediente: " + (err.erro || "Falha no servidor"));
+            }
+            fecharModal('modal-ingrediente');
+            atualizarTudo();
+        }
+
+        // ==================== COZINHEIROS ====================
+        async function carregarCozinheiros() {
+            try {
+                const res = await fetch(`${API_URL}/cozinheiros`);
+                if (!res.ok) throw new Error();
+                const cozinheiros = await res.json();
+                document.getElementById('total-cozinheiros').innerText = cozinheiros.length;
+
+                const tbody = document.getElementById('tabela-cozinheiros-corpo');
+                tbody.innerHTML = cozinheiros.map(c => `
+                    <tr class="hover:bg-slate-900/50 transition">
+                        <td class="p-4 text-slate-400">#${c.id}</td>
+                        <td class="p-4 font-medium text-slate-200">${c.nome}</td>
+                        <td class="p-4 text-emerald-400">${c.nivel || '-'}</td>
+                        <td class="p-4 text-slate-400">${c.especialidade || '-'}</td>
+                        <td class="p-4 text-right space-x-3">
+                            <button onclick="editarCozinheiro(${c.id}, '${c.nome.replace(/'/g, "\\'")}', '${(c.nivel || '').replace(/'/g, "\\'")}', '${(c.especialidade || '').replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
+                            <button onclick="deletarItem('cozinheiros', ${c.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {}
+        }
+
+        function abrirModalCozinheiro() {
+            document.getElementById('modal-cozinheiro-titulo').innerText = "Cadastrar Novo Cozinheiro";
+            document.getElementById('cozinheiro-id').value = '';
+            document.getElementById('form-cozinheiro').reset();
+            document.getElementById('modal-cozinheiro').classList.remove('hidden');
+        }
+
+        function editarCozinheiro(id, nome, nivel, especialidade) {
+            document.getElementById('modal-cozinheiro-titulo').innerText = "Editar Cozinheiro";
+            document.getElementById('cozinheiro-id').value = id;
+            document.getElementById('cozinheiro-nome').value = nome;
+            document.getElementById('cozinheiro-nivel').value = nivel;
+            document.getElementById('cozinheiro-especialidade').value = especialidade;
+            document.getElementById('modal-cozinheiro').classList.remove('hidden');
+        }
+
+        async function salvarCozinheiro(e) {
+            e.preventDefault();
+            const id = document.getElementById('cozinheiro-id').value;
+            const dados = {
+                nome: document.getElementById('cozinheiro-nome').value,
+                nivel: document.getElementById('cozinheiro-nivel').value,
+                especialidade: document.getElementById('cozinheiro-especialidade').value
+            };
+            const res = await fetch(id ? `${API_URL}/cozinheiros/${id}` : `${API_URL}/cozinheiros`, {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                return alert("Erro ao salvar cozinheiro: " + (err.erro || "Falha no servidor"));
+            }
+            fecharModal('modal-cozinheiro');
+            atualizarTudo();
+        }
+
+        // ==================== EXCLUSÃO GENÉRICA ====================
+        async function deletarItem(rota, id) {
+            if (confirm("Tem certeza que deseja excluir este registro?")) {
+                const res = await fetch(`${API_URL}/${rota}/${id}`, { method: 'DELETE' });
+                if (!res.ok) return alert("Erro ao excluir registro.");
+                atualizarTudo();
             }
         }
 
-        // Executa as funções assim que a página abre
-        carregarPratos();
-        carregarIngredientes();
+        function atualizarTudo() {
+            carregarPratos();
+            carregarIngredientes();
+            carregarCozinheiros();
+        }
+
+        window.onload = atualizarTudo;
     </script>
 </body>
 </html>
