@@ -3,233 +3,527 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Profissional de Cozinha - Japonesa</title>
+    <title>Kurogane Kitchen | Gestão Gastronômica Japonesa</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google: Noto Serif JP (Estética Japonesa) + Plus Jakarta Sans (UI Moderna) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ícones Profissionais Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serifjp: ['"Noto Serif JP"', 'serif'],
+                    },
+                    colors: {
+                        kuro: {
+                            950: '#09090B',
+                            900: '#111115',
+                            850: '#18181E',
+                            800: '#24242D',
+                        },
+                        akane: {
+                            500: '#DC2626',
+                            600: '#B91C1C',
+                            900: '#450A0A',
+                        },
+                        kinpaku: {
+                            400: '#FBBF24',
+                            500: '#D97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .bg-japanese-pattern {
+            background-color: #09090B;
+            background-image: radial-gradient(circle at 100% 150%, #09090B 24%, #131318 25%, #131318 28%, #09090B 29%, #09090B 36%, #131318 36%, #131318 40%, transparent 40%, transparent),
+            radial-gradient(circle at 0 150%, #09090B 24%, #131318 25%, #131318 28%, #09090B 29%, #09090B 36%, #131318 36%, #131318 40%, transparent 40%, transparent),
+            radial-gradient(circle at 50% 100%, #131318 10%, #09090B 11%, #09090B 23%, #131318 24%, #131318 30%, #09090B 31%, #09090B 43%, #131318 44%, #131318 50%, #09090B 51%, #09090B 63%, #131318 64%, #131318 71%, transparent 71%, transparent);
+            background-size: 60px 30px;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-tab { animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-modal { animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #09090B; }
+        ::-webkit-scrollbar-thumb { background: #272730; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #B91C1C; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex h-screen overflow-hidden">
+<body class="bg-japanese-pattern text-zinc-100 flex h-screen overflow-hidden antialiased selection:bg-akane-600 selection:text-white">
+
+    <!-- CONTAINER DE NOTIFICAÇÕES TOAST -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- BARRA LATERAL -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-4 shrink-0">
+    <aside class="w-72 bg-kuro-900/95 backdrop-blur-xl border-r border-kuro-800 flex flex-col justify-between p-5 shrink-0 relative z-20">
+        <div class="absolute top-0 right-0 w-[1px] h-full bg-gradient-to-b from-transparent via-kinpaku-500/20 to-transparent"></div>
+
         <div>
-            <div class="flex items-center space-x-3 mb-8 px-2">
-                <span class="text-2xl">🍣</span>
+            <div class="flex items-center gap-3.5 mb-9 px-2 pt-1">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-akane-500 to-akane-900 border border-akane-500/40 flex items-center justify-center shadow-lg shadow-akane-900/40 shrink-0">
+                    <span class="font-serifjp font-bold text-xl text-white tracking-tighter">和食</span>
+                </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight">Cozinha Japonesa</h1>
-                    <p class="text-xs text-slate-400">Painel Administrativo</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-serifjp font-bold text-lg tracking-wide text-zinc-100">KUROGANE</h1>
+                        <span class="text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded bg-kinpaku-500/10 text-kinpaku-400 border border-kinpaku-500/20 font-semibold">PRO</span>
+                    </div>
+                    <p class="text-xs text-zinc-400">Gestão de Cozinha Japonesa</p>
                 </div>
             </div>
 
-            <nav class="space-y-1">
-                <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-red-600 text-white font-medium transition shadow-lg shadow-red-900/30">
-                    <span>📊</span>
-                    <span>Visão Geral</span>
+            <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500 px-3 mb-3">
+                Operação & Controle
+            </div>
+
+            <nav class="space-y-1.5">
+                <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-akane-600 to-akane-500 text-white font-medium transition-all duration-200 shadow-lg shadow-akane-900/40">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <span class="text-sm">Visão Geral</span>
+                    </div>
+                    <span class="font-serifjp text-xs opacity-75">概要</span>
                 </button>
-                <button onclick="mudarAba('pratos')" id="btn-pratos" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
-                    <span>🍱</span>
-                    <span>Gerenciar Pratos</span>
+
+                <button onclick="mudarAba('pratos')" id="btn-pratos" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:bg-kuro-850 hover:text-zinc-100 transition-all duration-200">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="utensils" class="w-4 h-4"></i>
+                        <span class="text-sm">Cardápio & Pratos</span>
+                    </div>
+                    <span class="font-serifjp text-xs opacity-50">料理</span>
                 </button>
-                <button onclick="mudarAba('ingredientes')" id="btn-ingredientes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
-                    <span>📦</span>
-                    <span>Estoque / Insumos</span>
+
+                <button onclick="mudarAba('ingredientes')" id="btn-ingredientes" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:bg-kuro-850 hover:text-zinc-100 transition-all duration-200">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="package" class="w-4 h-4"></i>
+                        <span class="text-sm">Estoque & Insumos</span>
+                    </div>
+                    <span class="font-serifjp text-xs opacity-50">在庫</span>
                 </button>
-                <button onclick="mudarAba('cozinheiros')" id="btn-cozinheiros" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition">
-                    <span>👨‍🍳</span>
-                    <span>Cozinheiros</span>
+
+                <button onclick="mudarAba('cozinheiros')" id="btn-cozinheiros" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:bg-kuro-850 hover:text-zinc-100 transition-all duration-200">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="chef-hat" class="w-4 h-4"></i>
+                        <span class="text-sm">Brigada / Sushimen</span>
+                    </div>
+                    <span class="font-serifjp text-xs opacity-50">職人</span>
                 </button>
             </nav>
         </div>
 
-        <div class="text-xs text-slate-500 px-2">
-            Status API: <span id="status-api" class="text-amber-400 font-semibold">● Verificando...</span>
+        <div class="space-y-3">
+            <div class="p-3.5 rounded-xl bg-kuro-950/80 border border-kuro-800/80">
+                <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="text-zinc-400">Banco MySQL</span>
+                    <span id="status-api" class="text-kinpaku-400 font-medium flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-kinpaku-400 animate-pulse"></span> Conectando...
+                    </span>
+                </div>
+                <p class="text-[11px] text-zinc-500">Sincronização em tempo real</p>
+            </div>
         </div>
     </aside>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header class="bg-slate-900/50 border-b border-slate-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
-            <h2 id="titulo-pagina" class="text-xl font-bold text-slate-100">Visão Geral do Sistema</h2>
-            <div class="text-sm text-slate-400">Gabriel Cardoso | Full-Stack</div>
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        
+        <header class="sticky top-0 z-10 bg-kuro-900/80 border-b border-kuro-800 px-8 py-4 flex justify-between items-center backdrop-blur-md">
+            <div>
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2 h-2 rounded-full bg-akane-500"></span>
+                    <h2 id="titulo-pagina" class="font-serifjp text-xl font-bold text-zinc-100 tracking-wide">Visão Geral da Operação</h2>
+                </div>
+                <p id="subtitulo-pagina" class="text-xs text-zinc-400 mt-0.5 ml-4.5">Monitoramento executivo do restaurante em tempo real</p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex flex-col text-right">
+                    <span class="text-xs font-semibold text-zinc-200">Gabriel Cardoso</span>
+                    <span class="text-[11px] text-kinpaku-400">Engenharia da Computação • Full-Stack</span>
+                </div>
+                <div class="w-9 h-9 rounded-full bg-kuro-850 border border-kinpaku-500/30 flex items-center justify-center text-kinpaku-400 font-serifjp font-bold text-sm">
+                    GC
+                </div>
+            </div>
         </header>
 
-        <div class="p-8 space-y-6 flex-1">
+        <div class="p-8 space-y-8 flex-1 max-w-7xl w-full mx-auto">
 
             <!-- ABA 1: DASHBOARD -->
-            <section id="aba-dashboard" class="space-y-6">
+            <section id="aba-dashboard" class="space-y-8 animate-tab">
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-kuro-900 via-kuro-900 to-akane-900/30 border border-kuro-800 p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="space-y-1.5 relative z-10">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-akane-500">Painel Executivo</span>
+                        <h3 class="font-serifjp text-2xl font-bold text-white">Bem-vindo à Central de Comando da Cozinha</h3>
+                        <p class="text-sm text-zinc-400 max-w-xl">Controle o cardápio, acompanhe níveis críticos de insumos frescos e gerencie sua equipe de sushimen com precisão.</p>
+                    </div>
+                    <div class="font-serifjp text-6xl text-white/5 font-bold select-none hidden md:block">
+                        おもてなし
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <p class="text-slate-400 text-sm">Pratos no Cardápio</p>
-                        <h3 id="total-pratos" class="text-3xl font-bold mt-2 text-red-500">0</h3>
+                    <div onclick="mudarAba('pratos')" class="cursor-pointer group bg-kuro-900/90 hover:bg-kuro-850 border border-kuro-800 hover:border-akane-500/50 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 shadow-xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider">Pratos no Cardápio</p>
+                                <h3 id="total-pratos" class="text-4xl font-bold mt-2 text-white group-hover:text-akane-500 transition-colors">0</h3>
+                            </div>
+                            <div class="p-3 rounded-xl bg-akane-500/10 text-akane-500 border border-akane-500/20 group-hover:scale-110 transition-transform">
+                                <i data-lucide="utensils" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-kuro-800/80 flex items-center justify-between text-xs text-zinc-500">
+                            <span>Gerenciar receitas e tempos</span>
+                            <span class="text-akane-500 group-hover:translate-x-1 transition-transform">Acessar →</span>
+                        </div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <p class="text-slate-400 text-sm">Insumos no Estoque</p>
-                        <h3 id="total-ingredientes" class="text-3xl font-bold mt-2 text-amber-500">0</h3>
+
+                    <div onclick="mudarAba('ingredientes')" class="cursor-pointer group bg-kuro-900/90 hover:bg-kuro-850 border border-kuro-800 hover:border-kinpaku-500/50 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 shadow-xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider">Insumos Cadastrados</p>
+                                <h3 id="total-ingredientes" class="text-4xl font-bold mt-2 text-white group-hover:text-kinpaku-400 transition-colors">0</h3>
+                            </div>
+                            <div class="p-3 rounded-xl bg-kinpaku-500/10 text-kinpaku-400 border border-kinpaku-500/20 group-hover:scale-110 transition-transform">
+                                <i data-lucide="package" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-kuro-800/80 flex items-center justify-between text-xs text-zinc-500">
+                            <span>Controle de câmara fria e secos</span>
+                            <span class="text-kinpaku-400 group-hover:translate-x-1 transition-transform">Acessar →</span>
+                        </div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <p class="text-slate-400 text-sm">Cozinheiros na Equipe</p>
-                        <h3 id="total-cozinheiros" class="text-3xl font-bold mt-2 text-emerald-500">0</h3>
+
+                    <div onclick="mudarAba('cozinheiros')" class="cursor-pointer group bg-kuro-900/90 hover:bg-kuro-850 border border-kuro-800 hover:border-emerald-500/50 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 shadow-xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-zinc-400 text-xs font-medium uppercase tracking-wider">Brigada Ativa</p>
+                                <h3 id="total-cozinheiros" class="text-4xl font-bold mt-2 text-white group-hover:text-emerald-400 transition-colors">0</h3>
+                            </div>
+                            <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform">
+                                <i data-lucide="chef-hat" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-kuro-800/80 flex items-center justify-between text-xs text-zinc-500">
+                            <span>Sushimen e chefs quentes</span>
+                            <span class="text-emerald-400 group-hover:translate-x-1 transition-transform">Acessar →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-kuro-900/90 border border-kuro-800 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-kinpaku-400"></i>
+                                <h4 class="font-serifjp font-bold text-base text-zinc-100">Monitor de Reposição (Estoque Baixo)</h4>
+                            </div>
+                            <span class="text-[11px] px-2.5 py-1 rounded-full bg-kuro-850 text-zinc-400 border border-kuro-800">≤ 5 unidades</span>
+                        </div>
+                        <div id="lista-estoque-baixo" class="space-y-2.5 text-sm">
+                            <p class="text-zinc-500 text-xs py-4 text-center">Nenhum alerta crítico no momento.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-kuro-900/90 border border-kuro-800 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i data-lucide="sparkles" class="w-5 h-5 text-akane-500"></i>
+                                <h4 class="font-serifjp font-bold text-base text-zinc-100">Destaques Recentes do Cardápio</h4>
+                            </div>
+                            <button onclick="mudarAba('pratos')" class="text-xs text-akane-500 hover:underline">Ver todos</button>
+                        </div>
+                        <div id="lista-pratos-recentes" class="space-y-2.5 text-sm">
+                            <p class="text-zinc-500 text-xs py-4 text-center">Carregando cardápio...</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <!-- ABA 2: PRATOS -->
-            <section id="aba-pratos" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <input type="text" id="filtro-pratos" onkeyup="filtrarTabela('filtro-pratos', 'tabela-pratos-corpo')" placeholder="🔍 Filtrar pratos por nome ou tipo..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-red-500">
-                    <button onclick="abrirModalPrato()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-red-900/20 shrink-0">
-                        + Novo Prato
+            <section id="aba-pratos" class="hidden space-y-6 animate-tab">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-kuro-900/90 border border-kuro-800 p-4 rounded-2xl">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                        <input type="text" id="filtro-pratos" onkeyup="filtrarTabela('filtro-pratos', 'tabela-pratos-corpo')" placeholder="Buscar prato por nome, tipo ou tempo..." class="w-full bg-kuro-950 border border-kuro-800 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-akane-500 transition">
+                    </div>
+                    <button onclick="abrirModalPrato()" class="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-akane-600 to-akane-500 hover:from-akane-500 hover:to-akane-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-akane-900/30 active:scale-95">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Cadastrar Prato</span>
                     </button>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
-                                <th class="p-4">ID</th>
-                                <th class="p-4">Nome do Prato</th>
-                                <th class="p-4">Tipo / Categoria</th>
-                                <th class="p-4">Tempo de Preparo</th>
-                                <th class="p-4 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-pratos-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
-                    </table>
+
+                <div class="bg-kuro-900/90 border border-kuro-800 rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-kuro-800 text-zinc-400 text-[11px] uppercase tracking-wider bg-kuro-950/60">
+                                    <th class="p-4">Cód.</th>
+                                    <th class="p-4">Nome do Prato</th>
+                                    <th class="p-4">Categoria / Tipo</th>
+                                    <th class="p-4">Tempo Estimado</th>
+                                    <th class="p-4 text-right">Gerenciar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-pratos-corpo" class="divide-y divide-kuro-800/60 text-sm"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
             <!-- ABA 3: INGREDIENTES -->
-            <section id="aba-ingredientes" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <input type="text" id="filtro-ingredientes" onkeyup="filtrarTabela('filtro-ingredientes', 'tabela-ingredientes-corpo')" placeholder="🔍 Filtrar insumos no estoque..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-amber-500">
-                    <button onclick="abrirModalIngrediente()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-amber-900/20 shrink-0">
-                        + Novo Ingrediente
+            <section id="aba-ingredientes" class="hidden space-y-6 animate-tab">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-kuro-900/90 border border-kuro-800 p-4 rounded-2xl">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                        <input type="text" id="filtro-ingredientes" onkeyup="filtrarTabela('filtro-ingredientes', 'tabela-ingredientes-corpo')" placeholder="Buscar insumo (ex: Salmão, Arroz, Nori)..." class="w-full bg-kuro-950 border border-kuro-800 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-kinpaku-500 transition">
+                    </div>
+                    <button onclick="abrirModalIngrediente()" class="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-kinpaku-500 to-amber-500 hover:from-amber-500 hover:to-kinpaku-500 text-kuro-950 px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-lg shadow-amber-900/20 active:scale-95">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Novo Insumo</span>
                     </button>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
-                                <th class="p-4">ID</th>
-                                <th class="p-4">Insumo</th>
-                                <th class="p-4">Estoque Atual</th>
-                                <th class="p-4">Unidade</th>
-                                <th class="p-4 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-ingredientes-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
-                    </table>
+
+                <div class="bg-kuro-900/90 border border-kuro-800 rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-kuro-800 text-zinc-400 text-[11px] uppercase tracking-wider bg-kuro-950/60">
+                                    <th class="p-4">Cód.</th>
+                                    <th class="p-4">Insumo</th>
+                                    <th class="p-4">Saldo em Estoque</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Gerenciar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-ingredientes-corpo" class="divide-y divide-kuro-800/60 text-sm"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
             <!-- ABA 4: COZINHEIROS -->
-            <section id="aba-cozinheiros" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <input type="text" id="filtro-cozinheiros" onkeyup="filtrarTabela('filtro-cozinheiros', 'tabela-cozinheiros-corpo')" placeholder="🔍 Filtrar cozinheiros..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-emerald-500">
-                    <button onclick="abrirModalCozinheiro()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-emerald-900/20 shrink-0">
-                        + Novo Cozinheiro
+            <section id="aba-cozinheiros" class="hidden space-y-6 animate-tab">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-kuro-900/90 border border-kuro-800 p-4 rounded-2xl">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="w-4 h-4 text-zinc-500 absolute left-3.5 top-3"></i>
+                        <input type="text" id="filtro-cozinheiros" onkeyup="filtrarTabela('filtro-cozinheiros', 'tabela-cozinheiros-corpo')" placeholder="Buscar por nome, nível ou especialidade..." class="w-full bg-kuro-950 border border-kuro-800 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                    <button onclick="abrirModalCozinheiro()" class="w-full md:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-lg shadow-emerald-900/30 active:scale-95">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>Adicionar Profissional</span>
                     </button>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/50">
-                                <th class="p-4">ID</th>
-                                <th class="p-4">Nome</th>
-                                <th class="p-4">Nível</th>
-                                <th class="p-4">Especialidade</th>
-                                <th class="p-4 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-cozinheiros-corpo" class="divide-y divide-slate-800/60 text-sm"></tbody>
-                    </table>
+
+                <div class="bg-kuro-900/90 border border-kuro-800 rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-kuro-800 text-zinc-400 text-[11px] uppercase tracking-wider bg-kuro-950/60">
+                                    <th class="p-4">Cód.</th>
+                                    <th class="p-4">Profissional</th>
+                                    <th class="p-4">Hierarquia / Nível</th>
+                                    <th class="p-4">Praça / Especialidade</th>
+                                    <th class="p-4 text-right">Gerenciar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-cozinheiros-corpo" class="divide-y divide-kuro-800/60 text-sm"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- MODAL DE PRATO -->
-    <div id="modal-prato" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
-            <h3 id="modal-prato-titulo" class="text-lg font-bold">Cadastrar Novo Prato</h3>
+    <!-- ==================== MODAIS ==================== -->
+
+    <!-- MODAL PRATO -->
+    <div id="modal-prato" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-kuro-900 border border-kuro-800 w-full max-w-md p-6 rounded-2xl space-y-5 shadow-2xl animate-modal">
+            <div class="flex justify-between items-center border-b border-kuro-800 pb-3">
+                <h3 id="modal-prato-titulo" class="font-serifjp text-lg font-bold text-white">Cadastrar Novo Prato</h3>
+                <button onclick="fecharModal('modal-prato')" class="text-zinc-500 hover:text-zinc-300"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
             <form id="form-prato" onsubmit="salvarPrato(event)" class="space-y-4">
                 <input type="hidden" id="prato-id">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nome do Prato</label>
-                    <input type="text" id="prato-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Nome do Prato *</label>
+                    <input type="text" id="prato-nome" required placeholder="Ex: Combinado Omakase 24 Peças" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-akane-500 transition">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Tipo / Categoria</label>
-                    <input type="text" id="prato-tipo" required placeholder="Ex: Sushis, Temakis, Quentes" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Tipo / Categoria *</label>
+                    <input type="text" id="prato-tipo" required list="sugestoes-tipos" placeholder="Ex: Sushis, Temakis, Pratos Quentes" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-akane-500 transition">
+                    <datalist id="sugestoes-tipos">
+                        <option value="Sushis & Niguiris">
+                        <option value="Sashimis">
+                        <option value="Temakis">
+                        <option value="Hot Rolls">
+                        <option value="Pratos Quentes">
+                        <option value="Entradas">
+                    </datalist>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Tempo de Preparo (minutos)</label>
-                    <input type="number" id="prato-tempo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Tempo Médio de Preparo (minutos)</label>
+                    <input type="number" id="prato-tempo" placeholder="Ex: 15" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-akane-500 transition">
                 </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="fecharModal('modal-prato')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-sm font-medium transition">Salvar Prato</button>
+                <div class="flex justify-end gap-3 pt-3 border-t border-kuro-800">
+                    <button type="button" onclick="fecharModal('modal-prato')" class="px-4 py-2 rounded-xl bg-kuro-850 hover:bg-kuro-800 text-sm text-zinc-300 transition">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-akane-600 hover:bg-akane-500 text-sm font-semibold text-white transition shadow-lg shadow-akane-900/30">Salvar no Cardápio</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL DE INGREDIENTE -->
-    <div id="modal-ingrediente" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
-            <h3 id="modal-ingrediente-titulo" class="text-lg font-bold">Cadastrar Novo Ingrediente</h3>
+    <!-- MODAL INGREDIENTE -->
+    <div id="modal-ingrediente" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-kuro-900 border border-kuro-800 w-full max-w-md p-6 rounded-2xl space-y-5 shadow-2xl animate-modal">
+            <div class="flex justify-between items-center border-b border-kuro-800 pb-3">
+                <h3 id="modal-ingrediente-titulo" class="font-serifjp text-lg font-bold text-white">Cadastrar Insumo</h3>
+                <button onclick="fecharModal('modal-ingrediente')" class="text-zinc-500 hover:text-zinc-300"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
             <form id="form-ingrediente" onsubmit="salvarIngrediente(event)" class="space-y-4">
                 <input type="hidden" id="ingrediente-id">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nome do Insumo</label>
-                    <input type="text" id="ingrediente-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Nome do Insumo *</label>
+                    <input type="text" id="ingrediente-nome" required placeholder="Ex: Salmão Fresco Inteiro, Arroz Shari" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-kinpaku-500 transition">
                 </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Estoque Atual</label>
-                    <input type="number" step="1" id="ingrediente-qtd" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-400 mb-1.5">Estoque Atual *</label>
+                        <input type="number" step="1" id="ingrediente-qtd" required placeholder="Ex: 20" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-kinpaku-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-400 mb-1.5">Unidade *</label>
+                        <input type="text" id="ingrediente-unidade" required list="sugestoes-unidades" placeholder="Ex: kg, un, pct" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-kinpaku-500 transition">
+                        <datalist id="sugestoes-unidades">
+                            <option value="kg">
+                            <option value="g">
+                            <option value="un">
+                            <option value="litros">
+                            <option value="pacotes">
+                        </datalist>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Unidade de Medida</label>
-                    <input type="text" id="ingrediente-unidade" required placeholder="Ex: kg, un, litros" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="fecharModal('modal-ingrediente')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-sm font-medium transition">Salvar Insumo</button>
+                <div class="flex justify-end gap-3 pt-3 border-t border-kuro-800">
+                    <button type="button" onclick="fecharModal('modal-ingrediente')" class="px-4 py-2 rounded-xl bg-kuro-850 hover:bg-kuro-800 text-sm text-zinc-300 transition">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-kinpaku-500 hover:bg-amber-500 text-sm font-bold text-kuro-950 transition">Salvar Insumo</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL DE COZINHEIRO -->
-    <div id="modal-cozinheiro" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center z-50">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-2xl space-y-4 shadow-2xl">
-            <h3 id="modal-cozinheiro-titulo" class="text-lg font-bold">Cadastrar Novo Cozinheiro</h3>
+    <!-- MODAL COZINHEIRO -->
+    <div id="modal-cozinheiro" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-kuro-900 border border-kuro-800 w-full max-w-md p-6 rounded-2xl space-y-5 shadow-2xl animate-modal">
+            <div class="flex justify-between items-center border-b border-kuro-800 pb-3">
+                <h3 id="modal-cozinheiro-titulo" class="font-serifjp text-lg font-bold text-white">Cadastrar Profissional</h3>
+                <button onclick="fecharModal('modal-cozinheiro')" class="text-zinc-500 hover:text-zinc-300"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
             <form id="form-cozinheiro" onsubmit="salvarCozinheiro(event)" class="space-y-4">
                 <input type="hidden" id="cozinheiro-id">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nome do Profissional</label>
-                    <input type="text" id="cozinheiro-nome" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Nome Completo *</label>
+                    <input type="text" id="cozinheiro-nome" required placeholder="Ex: Kenji Takahashi" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500 transition">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Nível de Experiência</label>
-                    <select id="cozinheiro-nivel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                        <option value="Júnior">Júnior</option>
-                        <option value="Pleno">Pleno</option>
-                        <option value="Sênior / Sushiman Chefe">Sênior / Sushiman Chefe</option>
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Hierarquia / Nível</label>
+                    <select id="cozinheiro-nivel" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500 transition">
+                        <option value="Auxiliar de Cozinha">Auxiliar de Cozinha</option>
+                        <option value="Sushiman Júnior">Sushiman Júnior</option>
+                        <option value="Sushiman Pleno">Sushiman Pleno</option>
+                        <option value="Itamae / Chef Executivo">Itamae / Chef Executivo</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Especialidade</label>
-                    <input type="text" id="cozinheiro-especialidade" placeholder="Ex: Cortes de Peixe, Pratos Quentes" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Praça / Especialidade</label>
+                    <input type="text" id="cozinheiro-especialidade" placeholder="Ex: Bancada Fria & Cortes, Fritura & Teppan" class="w-full bg-kuro-950 border border-kuro-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500 transition">
                 </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="fecharModal('modal-cozinheiro')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm transition">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-sm font-medium transition">Salvar Cozinheiro</button>
+                <div class="flex justify-end gap-3 pt-3 border-t border-kuro-800">
+                    <button type="button" onclick="fecharModal('modal-cozinheiro')" class="px-4 py-2 rounded-xl bg-kuro-850 hover:bg-kuro-800 text-sm text-zinc-300 transition">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold text-white transition">Salvar Profissional</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO PERSONALIZADO -->
+    <div id="modal-confirmar-exclusao" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-kuro-900 border border-akane-500/40 w-full max-w-sm p-6 rounded-2xl space-y-5 shadow-2xl animate-modal">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-akane-500/15 border border-akane-500/30 flex items-center justify-center text-akane-500 shrink-0">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-serifjp text-base font-bold text-white">Confirmar Exclusão</h3>
+                    <p class="text-xs text-zinc-400 mt-0.5">Esta ação removerá o registro permanentemente.</p>
+                </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-kuro-950/90 border border-kuro-800 text-xs text-zinc-300">
+                Deseja realmente excluir <span id="exclusao-item-nome" class="font-bold text-akane-400">este registro</span>?
+            </div>
+
+            <div class="flex justify-end gap-3 pt-1">
+                <button type="button" onclick="fecharModal('modal-confirmar-exclusao')" class="px-4 py-2 rounded-xl bg-kuro-850 hover:bg-kuro-800 text-xs font-medium text-zinc-300 transition">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-confirmar-exclusao" class="px-4 py-2 rounded-xl bg-akane-600 hover:bg-akane-500 text-xs font-semibold text-white transition shadow-lg shadow-akane-900/40">
+                    Sim, Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
         const API_URL = 'http://localhost:3000/api';
+
+        function mostrarToast(mensagem, tipo = 'sucesso') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const estilos = {
+                sucesso: 'bg-kuro-900 border-emerald-500/50 text-emerald-400',
+                erro: 'bg-kuro-900 border-akane-500/60 text-akane-500',
+                info: 'bg-kuro-900 border-kinpaku-500/50 text-kinpaku-400'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md text-sm font-medium animate-modal ${estilos[tipo] || estilos.sucesso}`;
+            toast.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-current"></span>
+                <span>${mensagem}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
 
         function fecharModal(id) {
             document.getElementById(id).classList.add('hidden');
@@ -246,15 +540,35 @@
         function mudarAba(aba) {
             ['dashboard', 'pratos', 'ingredientes', 'cozinheiros'].forEach(item => {
                 document.getElementById(`aba-${item}`).classList.add('hidden');
-                document.getElementById(`btn-${item}`).className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition";
+                const btn = document.getElementById(`btn-${item}`);
+                btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:bg-kuro-850 hover:text-zinc-100 transition-all duration-200";
             });
 
-            document.getElementById(`aba-${aba}`).classList.remove('hidden');
-            const cores = { dashboard: 'bg-red-600 shadow-red-900/30', pratos: 'bg-red-600 shadow-red-900/30', ingredientes: 'bg-amber-600 shadow-amber-900/30', cozinheiros: 'bg-emerald-600 shadow-emerald-900/30' };
-            const titulos = { dashboard: 'Visão Geral do Sistema', pratos: 'Gerenciamento de Pratos', ingredientes: 'Controle de Estoque de Ingredientes', cozinheiros: 'Equipe de Cozinheiros' };
+            const secaoAtiva = document.getElementById(`aba-${aba}`);
+            secaoAtiva.classList.remove('hidden');
+            secaoAtiva.classList.remove('animate-tab');
+            void secaoAtiva.offsetWidth;
+            secaoAtiva.classList.add('animate-tab');
 
-            document.getElementById(`btn-${aba}`).className = `w-full flex items-center space-x-3 px-4 py-3 rounded-xl ${cores[aba]} text-white font-medium transition shadow-lg`;
-            document.getElementById('titulo-pagina').innerText = titulos[aba];
+            const estilosAtivos = {
+                dashboard: 'from-akane-600 to-akane-500 text-white shadow-akane-900/40',
+                pratos: 'from-akane-600 to-akane-500 text-white shadow-akane-900/40',
+                ingredientes: 'from-kinpaku-500 to-amber-500 text-kuro-950 font-bold shadow-amber-900/30',
+                cozinheiros: 'from-emerald-600 to-emerald-500 text-white shadow-emerald-900/40'
+            };
+
+            const titulos = {
+                dashboard: ['Visão Geral da Operação', 'Monitoramento executivo do restaurante em tempo real'],
+                pratos: ['Cardápio & Engenharia de Pratos', 'Cadastre e organize os pratos servidos na casa'],
+                ingredientes: ['Controle de Estoque & Câmara Fria', 'Acompanhe saldos de insumos e evite rupturas'],
+                cozinheiros: ['Brigada de Cozinha & Sushimen', 'Gestão da equipe técnica e praças de trabalho']
+            };
+
+            const btnAtivo = document.getElementById(`btn-${aba}`);
+            btnAtivo.className = `nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r ${estilosAtivos[aba]} font-medium transition-all duration-200 shadow-lg`;
+
+            document.getElementById('titulo-pagina').innerText = titulos[aba][0];
+            document.getElementById('subtitulo-pagina').innerText = titulos[aba][1];
 
             atualizarTudo();
         }
@@ -265,24 +579,52 @@
                 const res = await fetch(`${API_URL}/pratos`);
                 if (!res.ok) throw new Error();
                 const pratos = await res.json();
+                
                 document.getElementById('total-pratos').innerText = pratos.length;
-                document.getElementById('status-api').innerHTML = '<span class="text-emerald-400">● Conectada</span>';
+                document.getElementById('status-api').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span class="text-emerald-400">Online</span>';
+
+                const listaRecentes = document.getElementById('lista-pratos-recentes');
+                if (pratos.length === 0) {
+                    listaRecentes.innerHTML = '<p class="text-zinc-500 text-xs py-4 text-center">Nenhum prato cadastrado ainda.</p>';
+                } else {
+                    listaRecentes.innerHTML = pratos.slice(0, 4).map(p => `
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-kuro-950/70 border border-kuro-800/80">
+                            <div>
+                                <p class="font-medium text-zinc-200 text-xs">${p.nome}</p>
+                                <span class="text-[11px] text-zinc-500">${p.tipo}</span>
+                            </div>
+                            <span class="text-xs font-semibold text-akane-500 bg-akane-500/10 px-2.5 py-1 rounded-lg">${p.tempo_preparo ? p.tempo_preparo + ' min' : 'Rápido'}</span>
+                        </div>
+                    `).join('');
+                }
 
                 const tbody = document.getElementById('tabela-pratos-corpo');
+                if (pratos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-zinc-500">Nenhum prato cadastrado no cardápio. Clique em "+ Cadastrar Prato" para começar.</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = pratos.map(p => `
-                    <tr class="hover:bg-slate-900/50 transition">
-                        <td class="p-4 text-slate-400">#${p.id}</td>
-                        <td class="p-4 font-medium text-slate-200">${p.nome}</td>
-                        <td class="p-4 text-slate-400">${p.tipo || '-'}</td>
-                        <td class="p-4 text-slate-400">${p.tempo_preparo ? p.tempo_preparo + ' min' : '-'}</td>
-                        <td class="p-4 text-right space-x-3">
-                            <button onclick="editarPrato(${p.id}, '${p.nome.replace(/'/g, "\\'")}', '${(p.tipo || '').replace(/'/g, "\\'")}', ${p.tempo_preparo || 0})" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
-                            <button onclick="deletarItem('pratos', ${p.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
+                    <tr class="hover:bg-kuro-850/60 transition-colors group">
+                        <td class="p-4 text-zinc-500 font-mono text-xs">#${String(p.id).padStart(3, '0')}</td>
+                        <td class="p-4 font-semibold text-zinc-100">${p.nome}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-akane-500/10 text-akane-400 border border-akane-500/20">
+                                ${p.tipo || 'Geral'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-zinc-400 text-xs">
+                            ${p.tempo_preparo ? `<span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-zinc-500"></i> ${p.tempo_preparo} min</span>` : '-'}
+                        </td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="editarPrato(${p.id}, '${p.nome.replace(/'/g, "\\'")}', '${(p.tipo || '').replace(/'/g, "\\'")}', ${p.tempo_preparo || 0})" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 text-xs font-medium transition">Editar</button>
+                            <button onclick="deletarItem('pratos', ${p.id}, '${p.nome.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-akane-500/20 text-zinc-300 hover:text-akane-400 text-xs font-medium transition">Excluir</button>
                         </td>
                     </tr>
                 `).join('');
+                lucide.createIcons();
             } catch (e) {
-                document.getElementById('status-api').innerHTML = '<span class="text-red-400">● Erro na API</span>';
+                document.getElementById('status-api').innerHTML = '<span class="w-2 h-2 rounded-full bg-akane-500"></span> <span class="text-akane-500">Desconectada</span>';
             }
         }
 
@@ -315,11 +657,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            if (!res.ok) {
-                const err = await res.json();
-                return alert("Erro ao salvar prato: " + (err.erro || "Falha no servidor"));
-            }
+            if (!res.ok) return mostrarToast("Erro ao salvar prato no banco.", "erro");
+            
             fecharModal('modal-prato');
+            mostrarToast(id ? "Prato atualizado com sucesso!" : "Prato adicionado ao cardápio!");
             atualizarTudo();
         }
 
@@ -329,33 +670,61 @@
                 const res = await fetch(`${API_URL}/ingredientes`);
                 if (!res.ok) throw new Error();
                 const ingredientes = await res.json();
+                
                 document.getElementById('total-ingredientes').innerText = ingredientes.length;
 
+                const baixos = ingredientes.filter(i => i.estoque_atual <= 5);
+                const listaBaixo = document.getElementById('lista-estoque-baixo');
+                if (baixos.length === 0) {
+                    listaBaixo.innerHTML = '<p class="text-zinc-500 text-xs py-4 text-center">Todos os insumos estão com níveis saudáveis.</p>';
+                } else {
+                    listaBaixo.innerHTML = baixos.slice(0, 4).map(i => `
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-akane-900/20 border border-akane-500/30">
+                            <span class="font-medium text-zinc-200 text-xs">${i.nome}</span>
+                            <span class="text-xs font-bold text-akane-400">${i.estoque_atual} ${i.unidade} restantes</span>
+                        </div>
+                    `).join('');
+                }
+
                 const tbody = document.getElementById('tabela-ingredientes-corpo');
-                tbody.innerHTML = ingredientes.map(i => `
-                    <tr class="hover:bg-slate-900/50 transition">
-                        <td class="p-4 text-slate-400">#${i.id}</td>
-                        <td class="p-4 font-medium text-slate-200">${i.nome}</td>
-                        <td class="p-4 text-amber-400 font-semibold">${i.estoque_atual}</td>
-                        <td class="p-4 text-slate-400">${i.unidade || 'un'}</td>
-                        <td class="p-4 text-right space-x-3">
-                            <button onclick="editarIngrediente(${i.id}, '${i.nome.replace(/'/g, "\\'")}', ${i.estoque_atual}, '${(i.unidade || '').replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
-                            <button onclick="deletarItem('ingredientes', ${i.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
-                        </td>
-                    </tr>
-                `).join('');
+                if (ingredientes.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-zinc-500">Estoque vazio. Clique em "+ Novo Insumo" para registrar seus ingredientes.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = ingredientes.map(i => {
+                    let badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Normal</span>`;
+                    if (i.estoque_atual <= 2) {
+                        badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-akane-500/15 text-akane-400 border border-akane-500/30 animate-pulse">Crítico</span>`;
+                    } else if (i.estoque_atual <= 5) {
+                        badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-kinpaku-500/15 text-kinpaku-400 border border-kinpaku-500/30">Atenção</span>`;
+                    }
+
+                    return `
+                        <tr class="hover:bg-kuro-850/60 transition-colors">
+                            <td class="p-4 text-zinc-500 font-mono text-xs">#${String(i.id).padStart(3, '0')}</td>
+                            <td class="p-4 font-semibold text-zinc-100">${i.nome}</td>
+                            <td class="p-4 font-bold text-kinpaku-400">${i.estoque_atual} <span class="text-xs font-normal text-zinc-400">${i.unidade}</span></td>
+                            <td class="p-4">${badgeStatus}</td>
+                            <td class="p-4 text-right space-x-2">
+                                <button onclick="editarIngrediente(${i.id}, '${i.nome.replace(/'/g, "\\'")}', ${i.estoque_atual}, '${(i.unidade || '').replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 text-xs font-medium transition">Editar</button>
+                                <button onclick="deletarItem('ingredientes', ${i.id}, '${i.nome.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-akane-500/20 text-zinc-300 hover:text-akane-400 text-xs font-medium transition">Excluir</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (e) {}
         }
 
         function abrirModalIngrediente() {
-            document.getElementById('modal-ingrediente-titulo').innerText = "Cadastrar Novo Ingrediente";
+            document.getElementById('modal-ingrediente-titulo').innerText = "Cadastrar Novo Insumo";
             document.getElementById('ingrediente-id').value = '';
             document.getElementById('form-ingrediente').reset();
             document.getElementById('modal-ingrediente').classList.remove('hidden');
         }
 
         function editarIngrediente(id, nome, qtd, unidade) {
-            document.getElementById('modal-ingrediente-titulo').innerText = "Editar Ingrediente";
+            document.getElementById('modal-ingrediente-titulo').innerText = "Atualizar Estoque";
             document.getElementById('ingrediente-id').value = id;
             document.getElementById('ingrediente-nome').value = nome;
             document.getElementById('ingrediente-qtd').value = qtd;
@@ -376,11 +745,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            if (!res.ok) {
-                const err = await res.json();
-                return alert("Erro ao salvar ingrediente: " + (err.erro || "Falha no servidor"));
-            }
+            if (!res.ok) return mostrarToast("Erro ao salvar insumo.", "erro");
+
             fecharModal('modal-ingrediente');
+            mostrarToast(id ? "Saldo de estoque atualizado!" : "Insumo adicionado ao estoque!", "info");
             atualizarTudo();
         }
 
@@ -393,15 +761,24 @@
                 document.getElementById('total-cozinheiros').innerText = cozinheiros.length;
 
                 const tbody = document.getElementById('tabela-cozinheiros-corpo');
+                if (cozinheiros.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-zinc-500">Nenhum profissional cadastrado na brigada.</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = cozinheiros.map(c => `
-                    <tr class="hover:bg-slate-900/50 transition">
-                        <td class="p-4 text-slate-400">#${c.id}</td>
-                        <td class="p-4 font-medium text-slate-200">${c.nome}</td>
-                        <td class="p-4 text-emerald-400">${c.nivel || '-'}</td>
-                        <td class="p-4 text-slate-400">${c.especialidade || '-'}</td>
-                        <td class="p-4 text-right space-x-3">
-                            <button onclick="editarCozinheiro(${c.id}, '${c.nome.replace(/'/g, "\\'")}', '${(c.nivel || '').replace(/'/g, "\\'")}', '${(c.especialidade || '').replace(/'/g, "\\'")}')" class="text-blue-400 hover:text-blue-300 text-xs font-semibold">Editar</button>
-                            <button onclick="deletarItem('cozinheiros', ${c.id})" class="text-red-400 hover:text-red-300 text-xs font-semibold">Excluir</button>
+                    <tr class="hover:bg-kuro-850/60 transition-colors">
+                        <td class="p-4 text-zinc-500 font-mono text-xs">#${String(c.id).padStart(3, '0')}</td>
+                        <td class="p-4 font-semibold text-zinc-100">${c.nome}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                ${c.nivel || 'Padrão'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-zinc-400">${c.especialidade || '-'}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="editarCozinheiro(${c.id}, '${c.nome.replace(/'/g, "\\'")}', '${(c.nivel || '').replace(/'/g, "\\'")}', '${(c.especialidade || '').replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 text-xs font-medium transition">Editar</button>
+                            <button onclick="deletarItem('cozinheiros', ${c.id}, '${c.nome.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-kuro-850 hover:bg-akane-500/20 text-zinc-300 hover:text-akane-400 text-xs font-medium transition">Excluir</button>
                         </td>
                     </tr>
                 `).join('');
@@ -409,14 +786,14 @@
         }
 
         function abrirModalCozinheiro() {
-            document.getElementById('modal-cozinheiro-titulo').innerText = "Cadastrar Novo Cozinheiro";
+            document.getElementById('modal-cozinheiro-titulo').innerText = "Cadastrar Profissional";
             document.getElementById('cozinheiro-id').value = '';
             document.getElementById('form-cozinheiro').reset();
             document.getElementById('modal-cozinheiro').classList.remove('hidden');
         }
 
         function editarCozinheiro(id, nome, nivel, especialidade) {
-            document.getElementById('modal-cozinheiro-titulo').innerText = "Editar Cozinheiro";
+            document.getElementById('modal-cozinheiro-titulo').innerText = "Editar Profissional";
             document.getElementById('cozinheiro-id').value = id;
             document.getElementById('cozinheiro-nome').value = nome;
             document.getElementById('cozinheiro-nivel').value = nivel;
@@ -437,22 +814,40 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            if (!res.ok) {
-                const err = await res.json();
-                return alert("Erro ao salvar cozinheiro: " + (err.erro || "Falha no servidor"));
-            }
+            if (!res.ok) return mostrarToast("Erro ao salvar profissional.", "erro");
+
             fecharModal('modal-cozinheiro');
+            mostrarToast(id ? "Dados do profissional atualizados!" : "Profissional adicionado à brigada!");
             atualizarTudo();
         }
 
-        // ==================== EXCLUSÃO GENÉRICA ====================
-        async function deletarItem(rota, id) {
-            if (confirm("Tem certeza que deseja excluir este registro?")) {
-                const res = await fetch(`${API_URL}/${rota}/${id}`, { method: 'DELETE' });
-                if (!res.ok) return alert("Erro ao excluir registro.");
-                atualizarTudo();
-            }
+        // ==================== EXCLUSÃO PERSONALIZADA ====================
+        let exclusaoPendente = { rota: null, id: null };
+
+        function deletarItem(rota, id, nomeItem = 'este registro') {
+            exclusaoPendente = { rota, id };
+            document.getElementById('exclusao-item-nome').innerText = nomeItem;
+            document.getElementById('modal-confirmar-exclusao').classList.remove('hidden');
+            lucide.createIcons();
         }
+
+        document.getElementById('btn-confirmar-exclusao').addEventListener('click', async () => {
+            const { rota, id } = exclusaoPendente;
+            if (!rota || !id) return;
+
+            fecharModal('modal-confirmar-exclusao');
+
+            try {
+                const res = await fetch(`${API_URL}/${rota}/${id}`, { method: 'DELETE' });
+                if (!res.ok) {
+                    return mostrarToast("Não foi possível excluir (verifique vínculos no banco).", "erro");
+                }
+                mostrarToast("Registro removido com sucesso.", "info");
+                atualizarTudo();
+            } catch (e) {
+                mostrarToast("Erro de conexão com o servidor.", "erro");
+            }
+        });
 
         function atualizarTudo() {
             carregarPratos();
@@ -460,7 +855,10 @@
             carregarCozinheiros();
         }
 
-        window.onload = atualizarTudo;
+        window.onload = () => {
+            lucide.createIcons();
+            atualizarTudo();
+        };
     </script>
 </body>
 </html>
